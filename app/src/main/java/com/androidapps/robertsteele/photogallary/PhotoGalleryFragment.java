@@ -65,7 +65,6 @@ public class PhotoGalleryFragment extends Fragment {
         }
     }
 
-
     private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
@@ -90,7 +89,7 @@ public class PhotoGalleryFragment extends Fragment {
         }
 
         public void bindGalleryItem(GalleryItem item) {
-            mTitleTextView.setText(item.getCaption());
+            mTitleTextView.setText(item.getTitle());
         }
 
     }

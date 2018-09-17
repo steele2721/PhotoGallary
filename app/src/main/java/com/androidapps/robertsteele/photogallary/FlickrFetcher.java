@@ -3,6 +3,13 @@ package com.androidapps.robertsteele.photogallary;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +58,7 @@ public class FlickrFetcher {
 
     public List<GalleryItem> fetchItems() {
 
-        List<GalleryItem> items  = new ArrayList<>();
+        List<GalleryItem> items = new ArrayList<>();
         String url = Uri.parse("https://api.flickr.com/services/rest/")
                 .buildUpon()
                 .appendQueryParameter("method", "flickr.photos.getRecent")
@@ -63,7 +70,7 @@ public class FlickrFetcher {
         try {
             String jsonString = getUrlString(url);
             JSONObject jsonObject = new JSONObject(jsonString);
-            parseItems(items, jsonObject);
+            items = parseItems(jsonObject);
             Log.i(TAG, "Received JSON: " + jsonString);
         } catch (IOException ioe) {
             Log.e(TAG, "Failed to fetch items", ioe);
@@ -74,23 +81,13 @@ public class FlickrFetcher {
         return items;
     }
 
-    private void parseItems(List<GalleryItem> items, JSONObject body)
-            throws IOException, JSONException{
-        JSONObject jsonPhotosObject =  body.getJSONObject("photos");
-        JSONArray jsonPhotoArray = jsonPhotosObject.getJSONArray("photo");
-
-        for(int i = 0; i < jsonPhotoArray.length(); i++ ) {
-            JSONObject jsonObject = jsonPhotoArray.getJSONObject(i);
-            GalleryItem galleryItem = new GalleryItem();
-            galleryItem.setmId(jsonObject.getString("id"));
-            galleryItem.setmCaption(jsonObject.getString("title"));
-
-            if(!jsonObject.has("url_s")){
-                continue;
-            }
-            galleryItem.setmUrl("url_s");
-            items.add(galleryItem);
-        }
+    private List<GalleryItem> parseItems(JSONObject body)
+            throws JSONException {
+        Gson gson = new GsonBuilder().create();
+        JSONObject jsonPhotosObject = body.getJSONObject("photos");
+        String jsonPhotoArray = jsonPhotosObject.get("photo").toString();
+        return gson.fromJson(jsonPhotoArray, new TypeToken<List<GalleryItem>>() {
+        }.getType());
 
     }
 }

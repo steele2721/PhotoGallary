@@ -2,36 +2,35 @@ package com.androidapps.robertsteele.photogallary;
 
 public class GalleryItem {
 
-    private String mCaption;
-    private String mId;
-    private String mUrl;
+    private String title;
+    private String id;
+    private String url_s;
 
-    public String getmCaption() {
-        return mCaption;
+    public String getTitle() {
+        return title;
     }
 
-    public void setmCaption(String mCaption) {
-        this.mCaption = mCaption;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getmId() {
-        return mId;
+    public String getId() {
+        return id;
     }
 
-    public void setmId(String mId) {
-        this.mId = mId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getmUrl() {
-        return mUrl;
+    public String getUrl_s() {
+        return url_s;
     }
 
-    public void setmUrl(String mUrl) {
-        this.mUrl = mUrl;
+    public void setUrl_s(String url_s) {
+        this.url_s = url_s;
     }
-
 
     public String getCaption() {
-        return mCaption;
+        return title;
     }
 }
