@@ -81,7 +81,7 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private void setUpAdapter() {
-        if(isAdded()) {
+        if (isAdded()) {
             mRecyclerView.setAdapter(new PhotoAdapter(mItems));
         }
     }
@@ -97,7 +97,15 @@ public class PhotoGalleryFragment extends Fragment {
     private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
-            return new FlickrFetcher().fetchItems();
+            String query = "robot";
+            FlickrFetcher flickrFetcher = new FlickrFetcher();
+            if (query == null) {
+                return flickrFetcher.fetchRecentPhotos();
+            }
+            else {
+                return flickrFetcher.searchPhotos(query);
+            }
+
         }
 
         @Override
@@ -146,7 +154,7 @@ public class PhotoGalleryFragment extends Fragment {
                     getDrawable(android.R.drawable.ic_lock_idle_charging);
             photoHolder.bindDrawableView(placeHolder);
             mThumbnaildownloader.queueThumbnail(photoHolder, galleryItem.getUrl_s());
-          }
+        }
 
         @Override
         public int getItemCount() {
