@@ -6,14 +6,19 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.support.v7.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +36,7 @@ public class PhotoGalleryFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private RecyclerView mRecyclerView;
     private Thumbnaildownloader mThumbnaildownloader;
-    private Handler mResponseHandler;
+    private Handler mResponseHandler = new Handler();
     private List<GalleryItem> mItems = new ArrayList<>();
     private static final String TAG = "PhotoGalleryFragment";
 
@@ -48,9 +53,10 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        new FetchItemsTask().execute();
+        setHasOptionsMenu(true);
+        updateItems();
 
-        mThumbnaildownloader = new Thumbnaildownloader<>(new Handler());
+        mThumbnaildownloader = new Thumbnaildownloader<>(mResponseHandler);
         mThumbnaildownloader.setmThumbnailDownloadListener(
                 new Thumbnaildownloader.ThumbnailDownloadListener<PhotoHolder>() {
                     @Override
@@ -94,16 +100,69 @@ public class PhotoGalleryFragment extends Fragment {
         Log.i(TAG, "Background thread quit");
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.fragment_photo_gallery, menu);
+        final MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Log.d(TAG, "Query submitted " + s);
+                QueryPreferences.setStoredQuery(getActivity(), s);
+                updateItems();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d(TAG, "Search text changed" + s);
+                return false;
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String query = QueryPreferences.getStoredQuery(getActivity());
+                searchView.setQuery(query, false);
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_item_clear:
+                QueryPreferences.setStoredQuery(getActivity(), null);
+                updateItems();
+                return true;
+            default:
+                    return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
+    private void updateItems() {
+        String query = QueryPreferences.getStoredQuery(getActivity());
+        new FetchItemsTask(query).execute();
+    }
+
     private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
+
+        private String mQuery;
+
+        public FetchItemsTask(String query) {
+            mQuery = query;
+        }
+
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
-            String query = "robot";
             FlickrFetcher flickrFetcher = new FlickrFetcher();
-            if (query == null) {
+            if (mQuery == null) {
                 return flickrFetcher.fetchRecentPhotos();
-            }
-            else {
-                return flickrFetcher.searchPhotos(query);
+            } else {
+                return flickrFetcher.searchPhotos(mQuery);
             }
 
         }

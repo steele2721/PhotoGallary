@@ -8,5 +8,4 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
     protected Fragment createFragment() {
         return new PhotoGalleryFragment().newInstance();
     }
-
 }
