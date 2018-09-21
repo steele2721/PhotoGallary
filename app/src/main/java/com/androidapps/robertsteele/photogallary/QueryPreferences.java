@@ -17,5 +17,6 @@ public class QueryPreferences {
                 .edit()
                 .putString(PREF_SEARCH_QUERY, query)
                 .apply();
+
     }
 }
