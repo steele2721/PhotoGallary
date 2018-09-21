@@ -113,6 +113,7 @@ public class PhotoGalleryFragment extends Fragment {
                 QueryPreferences.setStoredQuery(getActivity(), s);
                 updateItems();
                 searchItem.collapseActionView();
+                searchView.clearFocus();
                 return true;
             }
 
