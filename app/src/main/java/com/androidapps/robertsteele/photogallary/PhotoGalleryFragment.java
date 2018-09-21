@@ -112,6 +112,7 @@ public class PhotoGalleryFragment extends Fragment {
                 Log.d(TAG, "Query submitted " + s);
                 QueryPreferences.setStoredQuery(getActivity(), s);
                 updateItems();
+                searchItem.collapseActionView();
                 return true;
             }
 
