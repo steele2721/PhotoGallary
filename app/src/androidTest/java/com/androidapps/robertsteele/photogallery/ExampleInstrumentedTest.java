@@ -1,4 +1,4 @@
-package com.androidapps.robertsteele.photogallary;
+package com.androidapps.robertsteele.photogallery;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
