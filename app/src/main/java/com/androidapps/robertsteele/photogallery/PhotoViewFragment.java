@@ -64,6 +64,7 @@ public class PhotoViewFragment extends VisibleFragment {
                 AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
                 appCompatActivity.getSupportActionBar().setTitle(title);
             }
+
         });
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(mUri.toString());
